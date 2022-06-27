@@ -48,11 +48,8 @@ const data = {
  * If one of them is an Array, use the findBestMatch() method
 */
 
-function comparison(){
-    /*Initialise the dataset to variables*/
-    const firstDataset = data.DataSet1
-    const secondDataset = data.DataSet2
-
+function comparison(firstDataset, secondDataset){
+    /* An array to keep track of the items that have been compared*/
     const comparedItemsArray = []
     const comparisonArray = Object.keys(firstDataset).map(key => {
         if(Object.keys(secondDataset).includes(key)){
@@ -90,7 +87,7 @@ function comparison(){
 
 function grading(){
     /* Object destructuring */
-    const { probability, score } = comparison()
+    const { probability, score } = comparison(data.DataSet1, data.DataSet2)
 
     /* Grading */
     let grade = ""
