@@ -81,6 +81,7 @@ function comparison(firstDataset, secondDataset){
     /* Calculate the final score for grading */
     const score = probability / comparedItemsArray.length
 
+    /* Object literal syntax extension*/
     return { probability, score }
 }
 
