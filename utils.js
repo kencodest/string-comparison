@@ -1,4 +1,6 @@
+/* Compare two strings */
 function compareTwoStrings(first, second) {
+    /* Regular expressions*/
 	first = first.replace(/\s+/g, '')
 	second = second.replace(/\s+/g, '')
 
@@ -28,9 +30,11 @@ function compareTwoStrings(first, second) {
 		}
 	}
 
+    /* The Dice Coefficient similarity formula */
 	return (2.0 * intersectionSize) / (first.length + second.length - 2);
 }
 
+/* checks similarity of a string against an array of strings and picks the best match */
 function findBestMatch(mainString, targetStrings) {
 	if (!areArgsValid(mainString, targetStrings)) throw new Error('Bad arguments: First argument should be a string, second should be an array of strings');
 	
@@ -52,6 +56,8 @@ function findBestMatch(mainString, targetStrings) {
 	return { ratings: ratings, bestMatch: bestMatch, bestMatchIndex: bestMatchIndex };
 }
 
+
+/* check if the passed arguments are strings. */
 function areArgsValid(mainString, targetStrings) {
 	if (typeof mainString !== 'string') return false;
 	if (!Array.isArray(targetStrings)) return false;
@@ -61,29 +67,34 @@ function areArgsValid(mainString, targetStrings) {
 }
 
 
-const checkValidFields=(dataset)=>{
-  let isValid;
+/*
+ * LOGIC FLOW 
+ * Access the keys/property names of the first dataset
+ * Map over every key of the first dataset while checking if the second dataset includes this key
+ * If there is no match, return 0 (this is the case when a key is only present in one of the datasets)
+ * If there is a match, start by checking the type of the values of the keys, in both datasets
+ * Additionally, check if there is a 'DateOfBirth' property. If so, slice the value to get the yearOfBirth
+ * If not, continue with execution
+ * If both are strings, use the compareTwoStrings() method
+ * If one of them is an Array, use the findBestMatch() method
+*/
 
-  if(!dataset.DateOfBirth) return isValid = false;
-  if(!dataset.Email) return isValid = false;
-  if(!dataset.IdNumber) return isValid = false;
-  if(!dataset.Name) return isValid = false;
-  if(!dataset.Phone) return isValid = false
-  else{
-      return isValid = true;
-  }
 
-}
-
+/* Takes two arguments, which should be objects and does the string comparison */
 function comparison(firstDataset, secondDataset){
   /* An array to keep track of the items that have been compared*/
   const comparedItemsArray = []
   const comparisonArray = Object.keys(firstDataset).map(key => {
       if(Object.keys(secondDataset).includes(key)){
           if(typeof firstDataset[key] === 'string' && typeof secondDataset[key] === 'string') {
-              const result = compareTwoStrings(firstDataset[key], secondDataset[key])
-              comparedItemsArray.push(result)
-              return result
+            if(key === "DateOfBirth"){
+                const result = compareTwoStrings(firstDataset[key].slice(0,4), secondDataset[key].slice(0,4))
+                comparedItemsArray.push(key)
+                return result
+            }
+            const result = compareTwoStrings(firstDataset[key], secondDataset[key])
+            comparedItemsArray.push(result)
+            return result
           } 
           else if (Array.isArray(firstDataset[key])){
               const result = findBestMatch(secondDataset[key], firstDataset[key])
@@ -100,20 +111,22 @@ function comparison(firstDataset, secondDataset){
       }
   })
 
-  /* Use the .reduce() method to get the sum of elements in the comparisonArray */
-  const probability = comparisonArray.reduce((total, current) => {
-      return total + current
-  }, 0)
 
-  /* Calculate the final score for grading */
-  const score = probability / comparedItemsArray.length
+    /* Use the .reduce() method to get the sum of elements in the comparisonArray */
+    const probability = comparisonArray.reduce((total, current) => {
+        return total + current
+    }, 0)
 
-  /* Object literal syntax extension*/
-  return { probability, score }
+
+    /* Calculate the final score for grading */
+    const score = probability / comparedItemsArray.length
+
+    /* Object literal syntax extension*/
+    return { probability, score }
 }
 
 
-exports.grading=function grading(firstDataset, secondDataset){
+exports.grading = function grading(firstDataset, secondDataset){
   /* Object destructuring */
   const { probability, score } = comparison(firstDataset, secondDataset)
 
@@ -157,9 +170,11 @@ exports.grading=function grading(firstDataset, secondDataset){
           
   }
 
+
+  /* result */
   return {
-      "Grade" : grade,
-      "Probability" : probability.toFixed(1)
+    "Grade" : grade,
+    "Probability" : probability.toFixed(1)
   }
 }
 
